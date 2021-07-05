@@ -629,8 +629,11 @@ class TrainAndEvaluateModel:
                 self.train_one_epoch(ckpt.step)
 
             # Run a validation loop at the end of each epoch.
-            with val_summary_writer.as_default():
-                val_logits = self.evaluate(ckpt.step)
+            if self.val_ds:
+                with val_summary_writer.as_default():
+                    val_logits = self.evaluate(ckpt.step)
+            else:
+                val_logits = []
 
         save_path = ckpt_manager.save()
         print(f"Saved checkpoint for step {ckpt.step.numpy()}: {save_path}")

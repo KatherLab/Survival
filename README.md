@@ -17,7 +17,7 @@ Input Variable name | Description
 -patientCol | The name of patient column in the clini table (PATIENT\ID\...)
 -trainFull | If the aim is to use all the patients to train a single model, this variable should be defined as True.
 
-If the variable -trainFull in the training  script is defined as True, then the Survival_Deploy script can be used to evalute the
+If the variable -trainFull in the training  script is defined as True, then the Survival_Deploy script can be used to evaluate the
 performance of the model on a new data set.
 
 

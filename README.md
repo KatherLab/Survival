@@ -1,6 +1,6 @@
 # EE-Surve
 
-This repository contains the script for the End-to-End Survival prediction from histopathological images.
+This repository contains the scripts for the End-to-End Survival prediction from histopathological images.
 The main script to run the survival is Survival_Main.py and the following table shows the description for 
 the main required variables for the script:
 

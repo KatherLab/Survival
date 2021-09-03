@@ -21,4 +21,7 @@ If the variable -trainFull in the training  script is defined as True, then the 
 performance of the model on a new data set.
 
 
+Some of the functions established in this repository are inspired by https://colab.research.google.com/github/sebp/survival-cnn-estimator/blob/master/tutorial_tf2.ipynb#scrollTo=azrczYYVvEQb.
+
+
 

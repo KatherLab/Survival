@@ -152,20 +152,20 @@ def GetTiles(patients, time, event, imgsList, cleanedTable, maxBlockNum = 500, t
                     patinetList.append(str(patientID))
  
     # WRITE THEM TO THE EXCEL FILES:
-    df = pd.DataFrame(list(zip(patinetList, tilesPathList, timeList, eventList)), columns =['patientID', 'tileAd', 'time', 'event']) 
+    df = pd.DataFrame(list(zip(patinetList, tilesPathList, timeList, eventList)), columns =['PATIENT', 'TILEPATH', 'TIME', 'EVENT']) 
     
     df_temp = df.dropna()
     if test:
         dfFromDict = df_temp
     else:            
-        tags = list(df_temp['event'].unique())
+        tags = list(df_temp['EVENT'].unique())
         tagsLength = []
         dfs = {}
         for tag in tags:
-            temp = df_temp.loc[df_temp['event'] == tag]
+            temp = df_temp.loc[df_temp['EVENT'] == tag]
             temp = temp.sample(frac=1).reset_index(drop=True)
             dfs[tag] = temp 
-            tagsLength.append(len(df_temp.loc[df_temp['event'] == tag]))
+            tagsLength.append(len(df_temp.loc[df_temp['EVENT'] == tag]))
         
         minSize = np.min(tagsLength)
         keys = list(dfs.keys())
@@ -704,17 +704,17 @@ class TrainAndEvaluateModel:
 def MergeResults(resultFolderPath):
     
     files = [os.path.join(resultFolderPath , i) for i in os.listdir(resultFolderPath)]
-    files = [i for i in files if not 'ORIGINAL' in i]
+    files = [i for i in files if not 'TILE_BASED' in i]
     df = pd.DataFrame()
     for file in files:
         df = df.append(pd.read_csv(file), ignore_index=True) 
-    df.to_csv(os.path.join(resultFolderPath, 'TOTAL_RESULT.csv'))
+    df.to_csv(os.path.join(resultFolderPath, 'TOTAL_TEST_RESULTS_PATIENT_BASED.csv'))
     
     
     cindex = concordance_index_censored(
-      event_indicator = df['e'] == 1,
-      event_time = df['t'],
-      estimate = df['score'])
+      event_indicator = df['EVENT'] == 1,
+      event_time = df['TIME'],
+      estimate = df['SCORE'])
     return cindex
 
 

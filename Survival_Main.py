@@ -29,11 +29,11 @@ from keras_preprocessing.image import ImageDataGenerator
 ###############################################################################
 
 parser = argparse.ArgumentParser(description = 'Survival Prediction')
-parser.add_argument('--datadir_train', type = str, default = r'E:\OE02-STADBIOPS-DX\BLOCKS_NORM_MACENKO')
-parser.add_argument('--slide_dir', type = str, default = "E:\OE02-STADBIOPS-DX\OE02-STADBIOPS-DX_SLIDE.csv")
-parser.add_argument('--clini_dir', type = str, default = "E:\OE02-STADBIOPS-DX\OE02-STADBIOPS-DX_CLINI.xlsx")
+parser.add_argument('--datadir_train', type = str, default = r'')
+parser.add_argument('--slide_dir', type = str, default = "")
+parser.add_argument('--clini_dir', type = str, default = "")
 parser.add_argument('--folds', type = int, default = 3)
-parser.add_argument('--outputPath', type = str, default = r"E:\Python_New_Survival_Approach_NEW\oe02-biopsy-TrainFull")
+parser.add_argument('--outputPath', type = str, default = r"")
 parser.add_argument('--checkPointName', type = str, default = r'oe02-biopsy-TrainFull')
 
 parser.add_argument('--lr', default = 1e-5, type=float, help = 'learning rate (default: 1e-4)')
@@ -47,10 +47,10 @@ parser.add_argument('--maxBlockNum', type = int, default ="150")
 parser.add_argument('--gpuNo', type = int, default = 1)
 parser.add_argument('--trainFull', type = bool, default = True)
 
-parser.add_argument('--evenCol', type = str, default = "Overall_Mortality")
-parser.add_argument('--timeCol', type = str, default = "Overall_Survival_From_Randomisation_ys")
+parser.add_argument('--evenCol', type = str, default = "")
+parser.add_argument('--timeCol', type = str, default = "")
 parser.add_argument('--timeInDays', type = bool, default = False)
-parser.add_argument('--patientCol', type = str, default = "PATIENT")
+parser.add_argument('--patientCol', type = str, default = "")
 
 ###############################################################################
 
@@ -109,7 +109,7 @@ if __name__ == '__main__':
            
         train_data = GetTiles(patients = patientID, time = time, event = event, imgsList = args.datadir_train,
                               cleanedTable = cleanedTable, maxBlockNum = args.maxBlockNum, test = False)
-        train_x_tiles = list(train_data['tileAd'])
+        train_x_tiles = list(train_data['TILEPATH'])
         train_time = list(train_data['time'])
         train_event = list(train_data['event'])
                 
@@ -120,7 +120,7 @@ if __name__ == '__main__':
         train_event = np.asarray(train_event)
         train_fn = InputFunction(train_x, train_time, train_event, drop_last = True, shuffle = True)
         del train_x
-        df = pd.DataFrame(list(zip(train_x_tiles, train_time, train_event)), columns =['X', 'time', 'event'])
+        df = pd.DataFrame(list(zip(train_x_tiles, train_time, train_event)), columns =['TILEPATH', 'time', 'event'])
         df.to_csv(os.path.join(args.split_dir, 'SPLIT_TRAIN_TOTAL.csv'), index = False)
         print()
         
@@ -170,9 +170,9 @@ if __name__ == '__main__':
             train_data = GetTiles(patients = trainData_patientID, time = trainData_time, event = trainData_event, imgsList = args.datadir_train,
                                   cleanedTable = cleanedTable, maxBlockNum = args.maxBlockNum, test = False)
             
-            train_x_tiles = list(train_data['tileAd'])
-            train_time = list(train_data['time'])
-            train_event = list(train_data['event'])
+            train_x_tiles = list(train_data['TILEPATH'])
+            train_time = list(train_data['TIME'])
+            train_event = list(train_data['EVENT'])
             
             
             train_x = [image.load_img(i, target_size=(224, 224)) for i in tqdm(train_x_tiles)]
@@ -182,7 +182,7 @@ if __name__ == '__main__':
             train_event = np.asarray(train_event)
             train_fn = InputFunction(train_x, train_time, train_event, drop_last = True, shuffle = True)
             del train_x
-            df = pd.DataFrame(list(zip(train_x_tiles, train_time, train_event)), columns =['X', 'time', 'event'])
+            df = pd.DataFrame(list(zip(train_x_tiles, train_time, train_event)), columns =['TILEPATH', 'TIME', 'EVENT'])
             df.to_csv(os.path.join(args.split_dir, 'SPLIT_TRAIN_' + str(counter)+ '.csv'), index = False)
             print()   
             
@@ -191,9 +191,9 @@ if __name__ == '__main__':
                 val_data = GetTiles(patients = valData_patientID, time = valData_time, event = valData_event, imgsList = args.datadir_train,
                                     cleanedTable = cleanedTable, maxBlockNum = args.maxBlockNum, test = True)
                 
-                val_x_tiles = list(val_data['tileAd'])   
-                val_time = list(val_data['time'])
-                val_event = list(val_data['event'])
+                val_x_tiles = list(val_data['TILEPATH'])   
+                val_time = list(val_data['TIME'])
+                val_event = list(val_data['EVENT'])
                 
                 val_x = [image.load_img(i, target_size=(224, 224)) for i in tqdm(val_x_tiles)]
                 val_x = [image.img_to_array(i) for i in val_x]
@@ -202,7 +202,7 @@ if __name__ == '__main__':
                 val_event = np.asarray(val_event)
                 val_fn = InputFunction(val_x, val_time, val_event, drop_last = True, shuffle = True)
                 del val_x
-                df = pd.DataFrame(list(zip(val_x_tiles, val_time, val_event)), columns =['X', 'time', 'event'])
+                df = pd.DataFrame(list(zip(val_x_tiles, val_time, val_event)), columns =['TILEPATH', 'TIME', 'EVENT'])
                 df.to_csv(os.path.join(args.split_dir, 'SPLIT_VAL_' + str(counter)+ '.csv'), index = False)    
                 print()
             
@@ -210,12 +210,12 @@ if __name__ == '__main__':
             test_data = GetTiles(patients = testData_patientID, time = testData_time, event = testData_event, imgsList = args.datadir_train,
                                  cleanedTable = cleanedTable, maxBlockNum = args.maxBlockNum, test = True)
             
-            test_x = list(test_data['tileAd'])
-            test_time = list(test_data['time'])
-            test_event = list(test_data['event'])
-            test_pid = list(test_data['patientID'])
+            test_x = list(test_data['TILEPATH'])
+            test_time = list(test_data['TIME'])
+            test_event = list(test_data['EVENT'])
+            test_pid = list(test_data['PATIENT'])
             
-            df = pd.DataFrame(list(zip(test_x, test_time, test_event)), columns =['X', 'time', 'event'])
+            df = pd.DataFrame(list(zip(test_x, test_time, test_event)), columns =['TILEPATH', 'TIME', 'EVENT'])
             df.to_csv(os.path.join(args.split_dir, 'SPLIT_TEST_' + str(counter)+ '.csv'), index = False) 
         
             print()
@@ -228,6 +228,9 @@ if __name__ == '__main__':
             x = base_model.output
             x = GlobalAveragePooling2D()(x)
             x = Dense(1024, activation='relu')(x)
+            x = Dense(512, activation='relu')(x)
+            x = Dense(128, activation='relu')(x)
+            x = Dense(64, activation='relu')(x)
             predictions = Dense(args.num_classes, activation='linear')(x)
             
             model = Model(inputs = base_model.input, outputs=predictions)
@@ -252,7 +255,7 @@ if __name__ == '__main__':
             
             test_datagen = ImageDataGenerator()
 
-            test_generator=test_datagen.flow_from_dataframe(
+            test_generator = test_datagen.flow_from_dataframe(
                                         dataframe=temp_df,
                                         x_col = 0,
                                         batch_size = args.batch_size,
@@ -283,8 +286,8 @@ if __name__ == '__main__':
     
              
     
-            df = pd.DataFrame(list(zip(test_pid, test_x, list(sample_predictions), test_time, test_event)),columns =['x', 'xx', 'y', 't', 'e'])
-            df.to_csv(os.path.join(args.results, 'TEST_RESULTS_ORIGINAL' + str(counter) + '.csv'), index = False)
+            df = pd.DataFrame(list(zip(test_pid, test_x, list(sample_predictions), test_time, test_event)),columns =['PATIENT', 'TILEPATH', 'SCORE', 'TIME', 'EVENT'])
+            df.to_csv(os.path.join(args.results, 'TEST_RESULTS_TILE_BASED' + str(counter) + '.csv'), index = False)
             scores = []
             patients = []
             t = []
@@ -293,12 +296,12 @@ if __name__ == '__main__':
             patientID_unique = set(test_pid)
             for pi in patientID_unique:
                 patients.append(pi)
-                data_temp = df.loc[df['x'] == pi]
+                data_temp = df.loc[df['PATIENT'] == pi]
                 data_temp = data_temp.reset_index()
-                score = np.mean(data_temp['y'])[0]
+                score = np.mean(data_temp['SCORE'])[0]
                 scores.append(score)
-                t.append(data_temp['t'][0])
-                e.append(data_temp['e'][0]) 
+                t.append(data_temp['TIME'][0])
+                e.append(data_temp['EVENT'][0]) 
             
             label = []
             hazard = []
@@ -318,8 +321,8 @@ if __name__ == '__main__':
               event_time=new_surv,
               estimate=new_hazard)
                     
-            df = pd.DataFrame(list(zip(patients, t, e, scores)), columns = ['pid', 't', 'e', 'score'])
-            df.to_csv(os.path.join(args.results, 'TEST_RESULTS' + str(counter) + '.csv'), index = False)
+            df = pd.DataFrame(list(zip(patients, t, e, scores)), columns = ['PATIENT', 'TIME', 'EVENT', 'SCORE'])
+            df.to_csv(os.path.join(args.results, 'TEST_RESULTS_PATIENT_BASED' + str(counter) + '.csv'), index = False)
             print('\n')   
             print('#################################################################')
             print('Patient-Wise Concordance_Index For Test Data Set {}:'.format(cindex))
@@ -335,12 +338,12 @@ if __name__ == '__main__':
         
 
         files = [os.path.join(args.results , i) for i in os.listdir(args.results)]
-        files = [i for i in files if 'ORIGINAL' in i]
+        files = [i for i in files if 'TILE_BASED' in i]
         df = pd.DataFrame()
         for file in files:
             df = df.append(pd.read_csv(file), ignore_index=True) 
             
-        df.to_csv(os.path.join(args.results, 'TOTAL_TEST_RESULTS_ORIGINAL.csv'))
+        df.to_csv(os.path.join(args.results, 'TOTAL_TEST_RESULTS_TILE_BASED.csv'))
         
         ##############################################################################
 

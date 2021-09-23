@@ -22,12 +22,12 @@ from tqdm import tqdm
 ##############################################################################
 
 parser = argparse.ArgumentParser(description = 'Survival Prediction')
-parser.add_argument('--datadir_test', type = str, default = r'E:\OE02-STADBIOPS-DX\BLOCKS_NORM_MACENKO')
-parser.add_argument('--slide_dir', type = str, default = "E:\OE02-STADBIOPS-DX\OE02-STADBIOPS-DX_SLIDE.csv")
-parser.add_argument('--clini_dir', type = str, default = "E:\OE02-STADBIOPS-DX\OE02-STADBIOPS-DX_CLINI.xlsx")
-parser.add_argument('--outputPath', type = str, default = r"E:\Python_New_Survival_Approach_NEW\oe02-biopsy-TrainFull\Deploy")
+parser.add_argument('--datadir_test', type = str, default = r'')
+parser.add_argument('--slide_dir', type = str, default = "")
+parser.add_argument('--clini_dir', type = str, default = "")
+parser.add_argument('--outputPath', type = str, default = r"")
 
-parser.add_argument('--modelPath', type = str, default = r"E:\Python_New_Survival_Approach_NEW\oe02-biopsy-TrainFull\oe02-biopsy-TrainFull_FULL")
+parser.add_argument('--modelPath', type = str, default = r"")
 
 
 parser.add_argument('--num_classes', type = int, default = 1)
@@ -36,10 +36,10 @@ parser.add_argument('--maxBlockNum', type = int, default ="150")
 
 parser.add_argument('--gpuNo', type = int, default = 1)
 
-parser.add_argument('--evenCol', type = str, default = "Overall_Mortality")
-parser.add_argument('--timeCol', type = str, default = "Overall_Survival_From_Randomisation_ys")
+parser.add_argument('--evenCol', type = str, default = "")
+parser.add_argument('--timeCol', type = str, default = "")
 parser.add_argument('--timeInDays', type = bool, default = False)
-parser.add_argument('--patientCol', type = str, default = "PATIENT")
+parser.add_argument('--patientCol', type = str, default = "")
 
 ##############################################################################
 
@@ -92,12 +92,12 @@ if __name__ == '__main__':
     test_data = GetTiles(patients = patientID, time = time, event = event, imgsList = args.datadir_test,
                          cleanedTable = cleanedTable, maxBlockNum = args.maxBlockNum, test = True)
     
-    test_x = list(test_data['tileAd'])
-    test_time = list(test_data['time'])
-    test_event = list(test_data['event'])
-    test_pid = list(test_data['patientID'])
+    test_x = list(test_data['TILEPATH'])
+    test_time = list(test_data['TIME'])
+    test_event = list(test_data['EVENT'])
+    test_pid = list(test_data['PATIENT'])
     
-    df = pd.DataFrame(list(zip(test_x, test_time, test_event)), columns =['X', 'time', 'event'])
+    df = pd.DataFrame(list(zip(test_x, test_time, test_event)), columns =['TILEPATH', 'TIME', 'EVENT'])
     df.to_csv(os.path.join(args.split_dir, 'SPLIT_TEST_TOTAL.csv'), index = False) 
             
     base_model = ResNet50(weights='imagenet', include_top=False)
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     
      
     
-    df = pd.DataFrame(list(zip(test_pid, test_x, list(sample_predictions), test_time, test_event)),columns =['x', 'xx', 'y', 't', 'e'])
+    df = pd.DataFrame(list(zip(test_pid, test_x, list(sample_predictions), test_time, test_event)),columns =['PATIENT', 'TILEPATH', 'SCORE', 'TIME', 'EVENT'])
     df.to_csv(os.path.join(args.results, 'TEST_RESULTS_ORIGINAL_FULL.csv'), index = False)
     scores = []
     patients = []
@@ -154,12 +154,12 @@ if __name__ == '__main__':
     patientID_unique = set(test_pid)
     for pi in patientID_unique:
         patients.append(pi)
-        data_temp = df.loc[df['x'] == pi]
+        data_temp = df.loc[df['PATIENT'] == pi]
         data_temp = data_temp.reset_index()
-        score = np.mean(data_temp['y'])[0]
+        score = np.mean(data_temp['SCORE'])[0]
         scores.append(score)
-        t.append(data_temp['t'][0])
-        e.append(data_temp['e'][0]) 
+        t.append(data_temp['TIME'][0])
+        e.append(data_temp['EVENT'][0]) 
     
     label = []
     hazard = []
@@ -179,7 +179,7 @@ if __name__ == '__main__':
       event_time=new_surv,
       estimate=new_hazard)
             
-    df = pd.DataFrame(list(zip(patients, t, e, scores)), columns = ['pid', 't', 'e', 'score'])
+    df = pd.DataFrame(list(zip(patients, t, e, scores)), columns = ['PATIENT', 'TIME', 'EVENT', 'SCORE'])
     df.to_csv(os.path.join(args.results, 'TEST_RESULTS_FULL.csv'), index = False)
     
     print('\n')   

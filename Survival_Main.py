@@ -67,6 +67,9 @@ if __name__ == '__main__':
     
     if not os.path.exists(args.projectFolder):
         os.mkdir(args.projectFolder) 
+    else:
+        raise ValueError('This project exists! Please Remove the folder')
+
     
             
     cleanedTable, _ = CreateCleanedTable(imagesPath = args.datadir_train, cliniTablePath = args.clini_dir, slideTablePath = args.slide_dir,

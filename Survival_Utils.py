@@ -619,7 +619,8 @@ class TrainAndEvaluateModel:
             print(f"Latest checkpoint restored from {ckpt_manager.latest_checkpoint}.")
 
         train_summary_writer = summary.create_file_writer(str(self.model_dir / "train"))
-        val_summary_writer = summary.create_file_writer(str(self.model_dir / "valid"))
+        if self.val_ds:
+            val_summary_writer = summary.create_file_writer(str(self.model_dir / "valid"))
 
         for epoch in range(self.num_epochs):
             gc.collect()

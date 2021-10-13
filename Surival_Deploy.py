@@ -23,8 +23,9 @@ from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description = 'Survival Prediction')
 parser.add_argument('--datadir_test', type = str, default = r'')
-parser.add_argument('--slide_dir', type = str, default = "")
-parser.add_argument('--clini_dir', type = str, default = "")
+parser.add_argument('--slide_dir', type = str, default = r"")
+parser.add_argument('--clini_dir', type = str, default = r"")
+
 parser.add_argument('--outputPath', type = str, default = r"")
 
 parser.add_argument('--modelPath', type = str, default = r"")
@@ -145,7 +146,7 @@ if __name__ == '__main__':
      
     
     df = pd.DataFrame(list(zip(test_pid, test_x, list(sample_predictions), test_time, test_event)),columns =['PATIENT', 'TILEPATH', 'SCORE', 'TIME', 'EVENT'])
-    df.to_csv(os.path.join(args.results, 'TEST_RESULTS_ORIGINAL_FULL.csv'), index = False)
+    df.to_csv(os.path.join(args.results, 'TEST_RESULTS_TILE_BASED_FULL.csv'), index = False)
     scores = []
     patients = []
     t = []
@@ -180,7 +181,7 @@ if __name__ == '__main__':
       estimate=new_hazard)
             
     df = pd.DataFrame(list(zip(patients, t, e, scores)), columns = ['PATIENT', 'TIME', 'EVENT', 'SCORE'])
-    df.to_csv(os.path.join(args.results, 'TEST_RESULTS_FULL.csv'), index = False)
+    df.to_csv(os.path.join(args.results, 'TEST_RESULTS_PATIENT_FULL.csv'), index = False)
     
     print('\n')   
     print('#################################################################')

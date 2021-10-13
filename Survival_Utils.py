@@ -718,9 +718,17 @@ def MergeResults(resultFolderPath):
       estimate = df['SCORE'])
     return cindex
 
+###############################################################################
 
+def CalculateCIndex(patientBaseResultPath):
+    df = pd.read_csv(patientBaseResultPath)
+    cindex = concordance_index_censored(
+      event_indicator = df['EVENT'] == 1,
+      event_time = df['TIME'],
+      estimate = df['SCORE'])
+    return cindex
 
-
+###############################################################################
 
 
 

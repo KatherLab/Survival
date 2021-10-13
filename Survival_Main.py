@@ -29,12 +29,13 @@ from keras_preprocessing.image import ImageDataGenerator
 ###############################################################################
 
 parser = argparse.ArgumentParser(description = 'Survival Prediction')
+
 parser.add_argument('--datadir_train', type = str, default = r'')
-parser.add_argument('--slide_dir', type = str, default = "")
-parser.add_argument('--clini_dir', type = str, default = "")
+parser.add_argument('--slide_dir', type = str, default = r"")
+parser.add_argument('--clini_dir', type = str, default = r"")
 parser.add_argument('--folds', type = int, default = 3)
 parser.add_argument('--outputPath', type = str, default = r"")
-parser.add_argument('--checkPointName', type = str, default = r'oe02-biopsy-TrainFull')
+parser.add_argument('--checkPointName', type = str, default = r'')
 
 parser.add_argument('--lr', default = 1e-5, type=float, help = 'learning rate (default: 1e-4)')
 parser.add_argument('--num_classes', type = int, default = 1)
@@ -49,7 +50,7 @@ parser.add_argument('--trainFull', type = bool, default = True)
 
 parser.add_argument('--evenCol', type = str, default = "")
 parser.add_argument('--timeCol', type = str, default = "")
-parser.add_argument('--timeInDays', type = bool, default = False)
+parser.add_argument('--timeInDays', type = bool, default = True)
 parser.add_argument('--patientCol', type = str, default = "")
 
 ###############################################################################
@@ -69,7 +70,6 @@ if __name__ == '__main__':
         os.mkdir(args.projectFolder) 
     else:
         raise ValueError('This project exists! Please Remove the folder')
-
     
             
     cleanedTable, _ = CreateCleanedTable(imagesPath = args.datadir_train, cliniTablePath = args.clini_dir, slideTablePath = args.slide_dir,
@@ -113,8 +113,8 @@ if __name__ == '__main__':
         train_data = GetTiles(patients = patientID, time = time, event = event, imgsList = args.datadir_train,
                               cleanedTable = cleanedTable, maxBlockNum = args.maxBlockNum, test = False)
         train_x_tiles = list(train_data['TILEPATH'])
-        train_time = list(train_data['time'])
-        train_event = list(train_data['event'])
+        train_time = list(train_data['TIME'])
+        train_event = list(train_data['EVENT'])
                 
         train_x = [image.load_img(i, target_size=(224, 224)) for i in tqdm(train_x_tiles)]
         train_x = [image.img_to_array(i) for i in train_x]
@@ -123,7 +123,7 @@ if __name__ == '__main__':
         train_event = np.asarray(train_event)
         train_fn = InputFunction(train_x, train_time, train_event, drop_last = True, shuffle = True)
         del train_x
-        df = pd.DataFrame(list(zip(train_x_tiles, train_time, train_event)), columns =['TILEPATH', 'time', 'event'])
+        df = pd.DataFrame(list(zip(train_x_tiles, train_time, train_event)), columns =['TILEPATH', 'TIME', 'EVENT'])
         df.to_csv(os.path.join(args.split_dir, 'SPLIT_TRAIN_TOTAL.csv'), index = False)
         print()
         
@@ -338,7 +338,6 @@ if __name__ == '__main__':
         
         totalCIndex = MergeResults(args.results)
         print('TOTAL C_INDEX: {}'.format(totalCIndex))
-        
 
         files = [os.path.join(args.results , i) for i in os.listdir(args.results)]
         files = [i for i in files if 'TILE_BASED' in i]
